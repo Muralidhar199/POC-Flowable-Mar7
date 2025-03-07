@@ -9,11 +9,14 @@ public class NotificationServiceTask implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) {
+        System.out.println("Sending notification to user");
         // Generate notification content using a template engine
         String content = generateNotificationContent((RefundRequest) execution.getVariable("refundRequest"));
+        System.out.println("Notification content: " + content);
         // Send notification via email or SMS
         EmailService emailService = new EmailService();
-        emailService.sendEmail("user@example.com", "Refund Notification", content);
+        System.out.println("Sending email to " + "muralidhar@gmail.com");
+        emailService.sendEmail("muralidhar@gmail.com", "Refund Notification", content);
     }
 
     private String generateNotificationContent(RefundRequest request) {

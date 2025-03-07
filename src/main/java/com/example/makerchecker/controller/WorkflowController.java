@@ -4,23 +4,21 @@ import com.example.makerchecker.services.TaskRepresentation;
 import com.example.makerchecker.services.WorkflowService;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/workflow")
 public class WorkflowController {
 
     @Autowired
     private WorkflowService workflowService;
 
     @PostMapping("/process")
-    public void startProcess() {
-        workflowService.startProcess();
+    public String startProcess() {
+       return workflowService.startProcess();
     }
 
     @GetMapping("/tasks")
