@@ -11,11 +11,13 @@ public class RefundServiceTask implements JavaDelegate {
     public void execute(DelegateExecution execution) {
         System.out.println("RefundServiceTask");
         // Logic to call payment service API for refund processing
-        RefundRequest request = (RefundRequest) execution.getVariable("refundRequest");
+
         try {
             // Call payment service API to initiate refund
             PaymentService paymentService = new PaymentService();
-            paymentService.initiateRefund(request.getRefundAmount(), request.getPaymentMethod());
+            double amount  = (double) execution.getVariable("refundAmount");
+            String paymentMethod = (String) execution.getVariable("paymentMethod");
+            paymentService.initiateRefund(amount, paymentMethod);
             execution.setVariable("refundStatus", "SUCCESS");
             System.out.println("Refund initiated successfully");
         } catch (Exception e) {

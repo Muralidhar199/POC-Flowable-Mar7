@@ -26,11 +26,22 @@
             <outgoing>sequenceFlow1</outgoing>
         </startEvent>
 
-        <sequenceFlow id="sequenceFlow1" sourceRef="startEvent" targetRef="userTask1"/>
+        <sequenceFlow id="sequenceFlow1" sourceRef="startEvent" targetRef="serviceTask1"/>
 
         <userTask id="userTask1" name="Approve Refund Request">
             <extensionElements>
-                <flowable:assignee>approver</flowable:assignee>
+               <!-- <flowable:taskListener event="create" class="org.flowable.listeners.AssigneeTaskListener" />-->
+                <!-- Alternative approach using field injection -->
+                <!--<flowable:assignee>
+                    <flowable:string>john.doe</flowable:string>
+                </flowable:assignee>-->
+                <!-- Or using expressions -->
+                <flowable:assignee>
+                    <flowable:expression>${approver}</flowable:expression>
+                </flowable:assignee>
+
+
+               <!-- <flowable:assignee>${approver}</flowable:assignee>-->
             </extensionElements>
             <incoming>sequenceFlow1</incoming>
             <outgoing>sequenceFlow2</outgoing>
@@ -45,11 +56,11 @@
         </exclusiveGateway>
 
         <sequenceFlow id="sequenceFlow3" name="Approved" sourceRef="exclusiveGateway1" targetRef="serviceTask1">
-            <conditionExpression xsi:type="tFormalExpression">${approved == true}</conditionExpression>
+            <conditionExpression xsi:type="tFormalExpression">${Approved == true}</conditionExpression>
         </sequenceFlow>
 
         <sequenceFlow id="sequenceFlow4" name="Rejected" sourceRef="exclusiveGateway1" targetRef="endEvent1">
-            <conditionExpression xsi:type="tFormalExpression">${approved == false}</conditionExpression>
+            <conditionExpression xsi:type="tFormalExpression">${Approved == false}</conditionExpression>
         </sequenceFlow>
         <serviceTask id="serviceTask1" name="Process Refund via Payment Service"
                      flowable:class="com.example.makerchecker.services.RefundServiceTask">

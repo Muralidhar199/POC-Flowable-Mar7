@@ -1,12 +1,15 @@
 package com.example.makerchecker.controller;
 
+import com.example.makerchecker.services.RefundRequest;
 import com.example.makerchecker.services.TaskRepresentation;
 import com.example.makerchecker.services.WorkflowService;
+import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -17,8 +20,9 @@ public class WorkflowController {
     private WorkflowService workflowService;
 
     @PostMapping("/process")
-    public String startProcess() {
-       return workflowService.startProcess();
+    public String startProcess(@RequestBody Map<String, Object> refundRequest) {
+
+       return workflowService.startProcess(refundRequest);
     }
 
     @GetMapping("/tasks")

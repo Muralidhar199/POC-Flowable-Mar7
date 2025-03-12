@@ -9,7 +9,7 @@ public class NotificationServiceTask implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) {
-        System.out.println("Sending notification to user");
+        System.out.println("Sending notification to user"+execution.getVariable("paymentMethod"));
         // Generate notification content using a template engine
         String content = generateNotificationContent((RefundRequest) execution.getVariable("refundRequest"));
         System.out.println("Notification content: " + content);
