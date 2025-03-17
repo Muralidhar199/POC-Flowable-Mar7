@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns:flowable="http://flowable.org/bpmn"
-             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-             targetNamespace="http://flowable.org/test" xsi:schemaLocation="http://flowable.org/bpmn ">
-    id="definitions"
-    name="Refund Request Process">-->
-
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
@@ -16,87 +6,56 @@
              id="definitions"
              name="Refund Request Process" targetNamespace="">
 
-<!--<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:flowable="http://flowable.org/bpmn"
-                 xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
-                 xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
-                 expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">-->
 
     <process id="refundRequestProcess" name="Refund Request Process" isExecutable="true">
-        <startEvent id="startEvent" name="Start Refund Request">
-            <outgoing>sequenceFlow1</outgoing>
-        </startEvent>
 
-        <sequenceFlow id="sequenceFlow1" sourceRef="startEvent" targetRef="serviceTask1"/>
+        <!-- Start Event -->
+        <startEvent id="startEvent" name="Start Refund Request"/>
 
-        <userTask id="userTask1" name="Approve Refund Request">
-            <extensionElements>
-               <!-- <flowable:taskListener event="create" class="org.flowable.listeners.AssigneeTaskListener" />-->
-                <!-- Alternative approach using field injection -->
-                <!--<flowable:assignee>
-                    <flowable:string>john.doe</flowable:string>
-                </flowable:assignee>-->
-                <!-- Or using expressions -->
-                <flowable:assignee>
-                    <flowable:expression>${approver}</flowable:expression>
-                </flowable:assignee>
+        <!-- Sequence Flow to Gateway -->
+        <sequenceFlow id="sequenceFlow1" sourceRef="startEvent" targetRef="exclusiveGateway"/>
+
+        <!-- Exclusive Gateway -->
+        <exclusiveGateway id="exclusiveGateway" name="Decision Point" />
 
 
-               <!-- <flowable:assignee>${approver}</flowable:assignee>-->
-            </extensionElements>
-            <incoming>sequenceFlow1</incoming>
-            <outgoing>sequenceFlow2</outgoing>
-        </userTask>
-
-        <sequenceFlow id="sequenceFlow2" sourceRef="userTask1" targetRef="exclusiveGateway1"/>
-
-        <exclusiveGateway id="exclusiveGateway1" name="Approved?">
-            <incoming>sequenceFlow2</incoming>
-            <outgoing>sequenceFlow3</outgoing>
-            <outgoing>sequenceFlow4</outgoing>
-        </exclusiveGateway>
-
-        <sequenceFlow id="sequenceFlow3" name="Approved" sourceRef="exclusiveGateway1" targetRef="serviceTask1">
-            <conditionExpression xsi:type="tFormalExpression">${Approved == true}</conditionExpression>
+        <!-- ApprovalTask -->
+        <sequenceFlow id="approvalFlow" sourceRef="exclusiveGateway" targetRef="ApprovalTask">
+            <conditionExpression xsi:type="tFormalExpression">${status == 'approved'}</conditionExpression>
         </sequenceFlow>
-
-        <sequenceFlow id="sequenceFlow4" name="Rejected" sourceRef="exclusiveGateway1" targetRef="endEvent1">
-            <conditionExpression xsi:type="tFormalExpression">${Approved == false}</conditionExpression>
-        </sequenceFlow>
-        <serviceTask id="serviceTask1" name="Process Refund via Payment Service"
-                     flowable:class="com.example.makerchecker.services.RefundServiceTask">
-            <incoming>sequenceFlow3</incoming>
+        <serviceTask id="ApprovalTask" name="approval Task" flowable:class="com.example.makerchecker.services.RefundServiceTask" >
+            <incoming>approvalFlow</incoming>
             <outgoing>sequenceFlow5</outgoing>
         </serviceTask>
-        <!--<serviceTask id="serviceTask1" name="Process Refund via Payment Service">
-            <extensionElements>
-                <flowable:field name="delegateExpression">
-                    <flowable:string>com.example.makerchecker.services.RefundServiceTask</flowable:string>
-                </flowable:field>
-            </extensionElements>
-            <incoming>sequenceFlow3</incoming>
-            <outgoing>sequenceFlow5</outgoing>
-        </serviceTask>-->
 
-        <sequenceFlow id="sequenceFlow5" sourceRef="serviceTask1" targetRef="serviceTask2"/>
+        <sequenceFlow id="sequenceFlow5" sourceRef="ApprovalTask" targetRef="serviceTask2"/>
+
 
         <serviceTask id="serviceTask2" name="Send Refund Notification" flowable:class="com.example.makerchecker.services.NotificationServiceTask">
-            <!--<extensionElements>
-                <flowable:field name="delegateExpression">
-                    <flowable:string>com.example.makerchecker.services.NotificationServiceTask</flowable:string>
-                </flowable:field>
-            </extensionElements>-->
             <incoming>sequenceFlow5</incoming>
             <outgoing>sequenceFlow6</outgoing>
         </serviceTask>
 
-        <sequenceFlow id="sequenceFlow6" sourceRef="serviceTask2" targetRef="endEvent2"/>
+        <sequenceFlow id="sequenceFlow6" sourceRef="serviceTask2" targetRef="endEvent"/>
 
-        <endEvent id="endEvent1" name="Refund Rejected">
-            <incoming>sequenceFlow4</incoming>
-        </endEvent>
+        <!--RejectedTask -->
+        <sequenceFlow id="rejectedFlow" sourceRef="exclusiveGateway" targetRef="RejectedTask">
+            <conditionExpression xsi:type="tFormalExpression">${status == 'rejected'}</conditionExpression>
+        </sequenceFlow>
+        <serviceTask id="RejectedTask" name="Rejected Task" flowable:class="com.example.makerchecker.services.RejectedTask" />
 
-        <endEvent id="endEvent2" name="Refund Processed">
-            <incoming>sequenceFlow6</incoming>
+
+        <!-- CancelledTask -->
+        <sequenceFlow id="CancelledFlow" sourceRef="exclusiveGateway" targetRef="CancelledTask">
+            <conditionExpression xsi:type="tFormalExpression">${status == 'cancelled'}</conditionExpression>
+        </sequenceFlow>
+        <serviceTask id="CancelledTask" name="Cancelled Task" flowable:class="com.example.makerchecker.services.CancelledTask" />
+
+        <!-- End Event -->
+        <endEvent id="endEvent" name="End">
+            <incoming>approvalFlow</incoming>
+            <incoming>rejectedFlow</incoming>
+            <incoming>CancelledFlow</incoming>
         </endEvent>
 
     </process>
