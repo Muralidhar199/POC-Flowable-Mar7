@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
              xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
              xmlns:flowable="http://flowable.org/bpmn"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
              id="definitions"
-             name="Refund Request Process" targetNamespace="">
+             name="Refund Request Process" targetNamespace="http://www.activiti.org/test">
 
 
     <process id="refundRequestProcess" name="Refund Request Process" isExecutable="true">
@@ -60,4 +62,15 @@
 
     </process>
 
+    <!--<bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="myProcess">
+            &lt;!&ndash; Add shape for ApprovalTask &ndash;&gt;
+            <bpmndi:BPMNShape id="ApprovalTask_di" bpmnElement="ApprovalTask">
+                <dc:Bounds x="300" y="80" width="100" height="80" />
+            </bpmndi:BPMNShape>
+
+            &lt;!&ndash; Add shapes for other elements (startEvent, endEvent, etc.) &ndash;&gt;
+            &lt;!&ndash; Add BPMNEdge elements for sequence flows &ndash;&gt;
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>-->
 </definitions>
